@@ -1,7 +1,7 @@
 
 
 CC := cc
-CFLAGS := -Wall -Wextra -Werror
+CFLAGS := -c #-Wall -Wextra -Werror
 SRCS :=	so_long.c
 NAME := so_long
 OBJS := ${SRCS:.c=.o}

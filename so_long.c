@@ -6,7 +6,7 @@
 /*   By: mlakhssa <mlakhssa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/04 10:33:07 by mlakhssa          #+#    #+#             */
-/*   Updated: 2022/02/05 11:59:26 by mlakhssa         ###   ########.fr       */
+/*   Updated: 2022/02/05 20:49:12 by mlakhssa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -171,8 +171,40 @@ int correct_input(char *argv)
 }
 int requirement_in(t_param *g)
 {
-	
-}//Hada khassek tchouf wach kaynine koulchi li f requirement
+	int i;
+	int j;
+	int counter_c;
+	int counter_e;
+	int counter_p;
+
+	i = 1;
+	counter_c = 0;
+	counter_e = 0;
+	counter_p = 0;
+	while(i < g->height)
+	{
+		j = 1;
+		while(j < (g->width) - 2)
+		{
+			if(g->map[i][j] == '0' || g->map[i][j] == 'E' || g->map[i][j] == '1' || g->map[i][j] == 'P' || g->map[i][j] == 'C')
+			{
+				if(g->map[i][j] == 'C')
+					counter_c += 1;
+				if(g->map[i][j] == 'P')
+					counter_p += 1;
+				if(g->map[i][j] == 'E')
+					counter_e += 1;
+			}
+			else
+				return (0);
+			j++;	
+		}
+		i++;
+	}
+	if (counter_c == 0 || counter_e == 0 || counter_p != 1)
+		return (0);
+	return (1);
+}
 int rectangular_map(char *argv)
 {
 	char	*i;
@@ -180,7 +212,6 @@ int rectangular_map(char *argv)
 	int		width;
 	int		temp;
 	int		height;
-	int		c;
 
 	fd = open(argv, O_RDONLY);
 	if (fd == -1)
@@ -194,30 +225,32 @@ int rectangular_map(char *argv)
 		perror("get_next_line");
 		return (0);
 	}
-	c = 0;
 	height = 0;
 	while (i)
 	{
-		if (!ft_strchr((const char *)i, '\n'))
+		if (!research_end(i, '\n'))
 		{	
 			temp = width;
 			width = ft_strlen(i);
+			printf("temp : %d width : %d\n",temp,width);
 		}
-		else if (c != 0)
+		else if (height != 0)
 		{
 			temp = width;
 			width = ft_strlen(i) -1;
+			
 		}
 		else
 			width = ft_strlen(i) -1;
-		if (c != 0 && temp != width)
-			return (0);
-		height++;
+		printf("%s",i);
 		free(i);
 		i = get_next_line(fd);
+		if (height != 0 && temp != width)
+			return (0);
+		height++;
 	}
 	free(i);
-	if (height <= 3)
+	if (height < 3)
 		return (0);
 	return (1);
 }
@@ -395,21 +428,26 @@ int Error_Handling(char *argv, t_param *g, int argc)
 		write(1,"Error\n",6);
 		return (0);
 	}
-	if(!chargement(g,argv))
-	{
-		write(1,"Error\n",6);
-		return (0);
-	}
-	if(!affect_map(g,argv))
-	{
-		write(1,"Error\n",6);
-		return (0);
-	}
-	if(!surrounded_by_1(g))
-	{
-		write(1,"Error\n",6);
-		return (0);
-	}
+	// if(!chargement(g,argv))
+	// {
+	// 	write(1,"Error\n",6);
+	// 	return (0);
+	// }
+	// if(!affect_map(g,argv))
+	// {
+	// 	write(1,"Error\n",6);
+	// 	return (0);
+	// }
+	// if(!surrounded_by_1(g))
+	// {
+	// 	write(1,"Error\n",6);
+	// 	return (0);
+	// }
+	// if(!requirement_in(g))
+	// {
+	// 	write(1,"Error\n",6);
+	// 	return (0);
+	// }
 	return (1);
 }
 int	shutdown_w(int keycode,t_param *g)
@@ -426,11 +464,11 @@ int	main(int argc, char **argv)
 	t_param	g;
 	if (Error_Handling(argv[1],&g,argc) == 0)
 		exit(0);
-	g.id = mlx_init();
+	/*g.id = mlx_init();
 	init(&g);
 	g.wdw = mlx_new_window(g.id,g.width * 16,g.height * 16, "Game");
 	mlx_key_hook(g.id,key_hook,&g);
 	mlx_hook(g.id,17,1L << 5,shutdown_w,&g);
-	mlx_loop(g.id);
+	mlx_loop(g.id);*/
 	exit(0);
 }
