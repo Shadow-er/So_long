@@ -6,7 +6,7 @@
 /*   By: mlakhssa <mlakhssa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/04 10:33:07 by mlakhssa          #+#    #+#             */
-/*   Updated: 2022/02/05 11:19:05 by mlakhssa         ###   ########.fr       */
+/*   Updated: 2022/02/05 11:59:26 by mlakhssa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ typedef struct p1
 	int	y;
 }t_p1;
 
-char	*research_end(char *s, int c)
+int	research_end(char *s, int c)
 {
 	char	d;
 	int		r;
@@ -70,11 +70,11 @@ char	*research_end(char *s, int c)
 		s++;
 	}
 	if (r == 1)
-		return (p);
+		return (1);
 	if (*s == c)
 	{
 		p = (char *)s;
-		return (p);
+		return (1);
 	}
 	return (0);
 }
@@ -105,7 +105,7 @@ int	surrounded_by_1(t_param *g)
 {
 	int		i;
 	int		j;
-	
+
 	i = 0;
 	while (g->map[i])
 	{
@@ -135,13 +135,13 @@ int correct_input(char *argv)
 	if (fd == -1)
 	{
 		perror("open");
-		return (-1);
+		return (0);
 	}
 	i = get_next_line(fd);
 	if (i == NULL)
 	{
 		perror("get_next_line");
-		return (-1);
+		return (0);
 	}
 	k = 0;
 	c = 0;
@@ -169,6 +169,10 @@ int correct_input(char *argv)
 	}
 	return (1);
 }
+int requirement_in(t_param *g)
+{
+	
+}//Hada khassek tchouf wach kaynine koulchi li f requirement
 int rectangular_map(char *argv)
 {
 	char	*i;
@@ -182,13 +186,13 @@ int rectangular_map(char *argv)
 	if (fd == -1)
 	{
 		perror("open");
-		return (-1);
+		return (0);
 	}
 	i = get_next_line(fd);
 	if (i == NULL)
 	{
 		perror("get_next_line");
-		return (-1);
+		return (0);
 	}
 	c = 0;
 	height = 0;
@@ -213,7 +217,7 @@ int rectangular_map(char *argv)
 		i = get_next_line(fd);
 	}
 	free(i);
-	if (height != 3)
+	if (height <= 3)
 		return (0);
 	return (1);
 }
@@ -226,13 +230,13 @@ int	chargement(t_param *g, char *argv)
 	if (fd == -1)
 	{
 		perror("open");
-		return (-1);
+		return (0);
 	}
 	i = get_next_line(fd);
 	if (i == NULL)
 	{
 		perror("get_next_line");
-		return (-1);
+		return (0);
 	}
 	g->width = ft_strlen(i) - 1;
 	g->height = 1;
@@ -268,7 +272,7 @@ int	affect_map(t_param *g, char *argv)
 		g->map[i] = (char *)malloc((sizeof(char) * (g->width + 1)));
 		if (g->map[i] == 0)
 			return (0);// Khassek tfreeyez li 9bel menou bach may w93ch mouchkil
-		while (j < g->width)
+		while (j < g->width - 1)
 		{
 			g->map[i][j] = l[j];
 			j++;
@@ -381,7 +385,12 @@ int Error_Handling(char *argv, t_param *g, int argc)
 		write(1,"Error\n",6);
 		return (0);
 	}
-	if(rectangular_map(argv) == 0 || correct_input(argv) == 0)
+	if(!file_format(argv))
+	{
+		write(1,"Error\n",6);
+		return (0);
+	}
+	if(!rectangular_map(argv) || !correct_input(argv))
 	{
 		write(1,"Error\n",6);
 		return (0);
@@ -396,16 +405,20 @@ int Error_Handling(char *argv, t_param *g, int argc)
 		write(1,"Error\n",6);
 		return (0);
 	}
-	if(surrounded_by_1(g))
+	if(!surrounded_by_1(g))
 	{
 		write(1,"Error\n",6);
 		return (0);
 	}
 	return (1);
 }
-int	shutdown_w(int keycode, t_param *g)
+int	shutdown_w(int keycode,t_param *g)
 {
-	mlx_destroy_window(g->id, g->wdw);
+	if(keycode == 17)
+	{
+		mlx_destroy_window(g->id, g->wdw);
+		exit(0);
+	}
 	return (0);
 }
 int	main(int argc, char **argv)
